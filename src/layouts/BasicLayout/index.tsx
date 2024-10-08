@@ -13,6 +13,11 @@ import Link from "next/link";
 import GlobalFooter from "@/components/GlobalFooter";
 import {menus} from "../../../config/menu";
 import {listQuestionVoByPageUsingPost} from "@/api/questionController";
+import {RootState} from "@/stores";
+import {useSelector} from "react-redux";
+import getAccessibleMenus from "@/access/meauAccess";
+import MdEditor from "@/components/MdEidtor";
+import MdViewer from "@/components/MdViewer";
 
 const SearchInput = () => {
   return (
@@ -53,6 +58,10 @@ export default function BasicLayout({ children }: Props) {
   // })
 
   const pathname = usePathname();
+
+  const loginUser = useSelector((state: RootState) => state.loginUser);
+  // const [text, setText] = useState<string>('');
+
   return (
     <div
       id="basicLayout"
@@ -60,7 +69,7 @@ export default function BasicLayout({ children }: Props) {
         height: "100vh",
         overflow: "auto",
       }}
-    >
+    >z
       <ProLayout
         title="龙腾智途-刷题平台"
         layout="top"
@@ -76,9 +85,9 @@ export default function BasicLayout({ children }: Props) {
           pathname,
         }}
         avatarProps={{
-          src: "https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg",
+          src: loginUser.userAvatar || "/assets/logo.png",
           size: "small",
-          title: "七妮妮",
+          title: loginUser.userName || "懒惰鸭",
           render: (props, dom) => {
             return (
               <Dropdown
@@ -131,7 +140,7 @@ export default function BasicLayout({ children }: Props) {
         onMenuHeaderClick={(e) => console.log(e)}
         // 定义有哪些菜单
         menuDataRender={() => {
-          return menus;
+          return getAccessibleMenus(loginUser, menus);
         }}
         // 定义菜单项如何渲染
         menuItemRender={(item, dom) => (
