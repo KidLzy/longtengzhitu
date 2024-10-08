@@ -1,8 +1,9 @@
 .global-footer {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   width: 100%;
   background: #efefef;
-  padding: 16px;
+  padding: 5px;
   text-align: center;
 }
+
