@@ -60,6 +60,10 @@ create table if not exists question
     content    text                               null comment '内容',
     tags       varchar(1024)                      null comment '标签列表（json 数组）',
     answer     text                               null comment '推荐答案',
+    reviewStatus  int      default 0  not null comment '状态：0-待审核, 1-通过, 2-拒绝',
+    reviewMessage varchar(512)        null comment '审核信息',
+    reviewerId    bigint              null comment '审核人 id',
+    reviewTime    datetime            null comment '审核时间',
     viewNum       int      default 0    not null comment '浏览量',
     thumbNum      int      default 0    not null comment '点赞数',
     favourNum     int      default 0    not null comment '收藏数',
@@ -85,3 +89,28 @@ create table if not exists question_bank_question
     updateTime     datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
     UNIQUE (questionBankId, questionId)
 ) comment '题库题目' collate = utf8mb4_unicode_ci;
+
+
+-- 题目点赞表（硬删除）
+create table if not exists question_thumb
+(
+    id         bigint auto_increment comment 'id' primary key,
+    questionId bigint                             not null comment '题目 id',
+    userId     bigint                             not null comment '创建用户 id',
+    createTime datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    updateTime datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    index idx_questionId (questionId),
+    index idx_userId (userId)
+) comment '题目点赞';
+
+-- 题目收藏表（硬删除）
+create table if not exists question_favour
+(
+    id         bigint auto_increment comment 'id' primary key,
+    questionId bigint                             not null comment '题目 id',
+    userId     bigint                             not null comment '创建用户 id',
+    createTime datetime default CURRENT_TIMESTAMP not null comment '创建时间',
+    updateTime datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP comment '更新时间',
+    index idx_questionId (questionId),
+    index idx_userId (userId)
+) comment '题目收藏';
