@@ -1,15 +1,19 @@
 import Title from "antd/es/typography/Title";
 import QuestionTable from "@/components/QuestionTable";
-import { listQuestionVoByPageUsingPost } from "@/api/questionController";
+import {listQuestionVoByPageUsingPost, searchQuestionVoByPageUsingPost} from "@/api/questionController";
 
-export default async function QuestionPage() {
+export default async function QuestionPage({ searchParams }) {
+  // 获取url的查询参数
+  const { q: searchText } = searchParams;
+  //
   let questionList = [];
   let total = 0;
 
   try {
-    const questionRes = await listQuestionVoByPageUsingPost({
+    const questionRes = await searchQuestionVoByPageUsingPost({
+      title: searchText,
       pageSize: 12,
-      sortField: "createTime",
+      sortField: "_score",
       sortOrder: "descend",
     }) as any;
     questionList = questionRes.data.records ?? [];
@@ -21,7 +25,9 @@ export default async function QuestionPage() {
   return (
     <div id="questionPage">
       <Title level={3}>题库大全</Title>
-      <QuestionTable defaultQuestionList={questionList} />
+      <QuestionTable defaultQuestionList={questionList} defaultTotal={total} defaultSearchParams={{
+        title:searchText,
+      }}/>
     </div>
   );
 }

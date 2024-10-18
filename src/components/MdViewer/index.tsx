@@ -4,8 +4,10 @@ import highlight from "@bytemd/plugin-highlight";
 import "bytemd/dist/index.css";
 import "highlight.js/styles/vs.css";
 import "./index.css";
-import { setTheme } from "bytemd-plugin-theme";
-import {useEffect} from "react";
+import 'github-markdown-css/github-markdown-light.css';
+import {setTheme, themeList} from "bytemd-plugin-theme";
+import {useEffect, useState} from "react";
+import {Select} from "antd";
 
 
 interface Props {
@@ -23,14 +25,17 @@ const plugins = [gfm(), highlight()];
  */
 const MdViewer = (props: Props) => {
   const { value = "", theme = "channing-cyan" } = props;
+    // const { value = ""} = props;
 
-  useEffect(() => {
+    useEffect(() => {
     setTheme(theme);
   }, [theme]);
 
   return (
+
       <div className="md-viewer">
-        <Viewer value={value} plugins={plugins} />
+
+          <Viewer value={value} plugins={plugins} />
       </div>
   );
 };

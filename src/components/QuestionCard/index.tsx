@@ -1,8 +1,12 @@
-import { Card, Tag } from "antd";
+"use client";
+import {Card, Select} from "antd";
 import "./index.css";
 import MdViewer from "@/components/MdViewer";
 import TagList from "@/components/TagList";
 import Title from "antd/es/typography/Title";
+import {useState} from "react";
+import {themeList} from "bytemd-plugin-theme";
+import useAddUserSignInRecord from "@/hooks/useAddUserSignInRecord";
 
 interface Props {
   question: API.QuestionVO;
@@ -15,9 +19,14 @@ interface Props {
  */
 const QuestionCard = (props: Props) => {
   const { question } = props;
+    const [themeValue, setThemeValue] = useState<string>("channing-cyan");
+
+    const handleChange = (value: string) => {
+        setThemeValue(value);
+    };
 
   // 签到
-  // useAddUserSignInRecord();
+  useAddUserSignInRecord();
 
   return (
     <div className="question-card">
@@ -31,7 +40,19 @@ const QuestionCard = (props: Props) => {
       </Card>
       <div style={{ marginBottom: 16 }} />
       <Card title="推荐答案">
-        <MdViewer value={question.answer} />
+          <Select
+              defaultValue={themeValue}
+              style={{width: 205}}
+              onChange={handleChange}
+              options={themeList.map((item) => {
+                  return {
+                      key: item.theme,
+                      label: item.title,
+                      value: item.theme,
+                  };
+              })}
+          />
+        <MdViewer value={question.answer} theme={themeValue}/>
       </Card>
     </div>
   );

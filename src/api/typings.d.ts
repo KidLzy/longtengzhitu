@@ -11,6 +11,12 @@ declare namespace API {
     message?: string;
   };
 
+  type BaseResponseListInt_ = {
+    code?: number;
+    data?: number[];
+    message?: string;
+  };
+
   type BaseResponseLoginUserVO_ = {
     code?: number;
     data?: LoginUserVO;
@@ -176,6 +182,11 @@ declare namespace API {
   type getUserByIdUsingGETParams = {
     /** id */
     id?: number;
+  };
+
+  type getUserSignInRecordUsingGETParams = {
+    /** year */
+    year?: number;
   };
 
   type getUserVOByIdUsingGETParams = {
@@ -500,6 +511,16 @@ declare namespace API {
     questionId?: number;
   };
 
+  type QuestionBankQuestionBatchAddRequest = {
+    questionBankId?: number;
+    questionIdList?: number[];
+  };
+
+  type QuestionBankQuestionBatchRemoveRequest = {
+    questionBankId?: number;
+    questionIdList?: number[];
+  };
+
   type QuestionBankQuestionQueryRequest = {
     current?: number;
     id?: number;
@@ -551,6 +572,10 @@ declare namespace API {
     updateTime?: string;
     user?: UserVO;
     userId?: number;
+  };
+
+  type QuestionBatchDeleteRequest = {
+    questionIdList?: number[];
   };
 
   type QuestionEditRequest = {
