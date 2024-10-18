@@ -7,10 +7,7 @@ import com.lazy.longtengzt.common.*;
 import com.lazy.longtengzt.constant.UserConstant;
 import com.lazy.longtengzt.exception.BusinessException;
 import com.lazy.longtengzt.exception.ThrowUtils;
-import com.lazy.longtengzt.model.dto.question.QuestionAddRequest;
-import com.lazy.longtengzt.model.dto.question.QuestionEditRequest;
-import com.lazy.longtengzt.model.dto.question.QuestionQueryRequest;
-import com.lazy.longtengzt.model.dto.question.QuestionUpdateRequest;
+import com.lazy.longtengzt.model.dto.question.*;
 import com.lazy.longtengzt.model.entity.Question;
 import com.lazy.longtengzt.model.entity.User;
 import com.lazy.longtengzt.model.enums.ReviewStatusEnum;
@@ -286,5 +283,20 @@ public class QuestionController {
         ThrowUtils.throwIf(oldQuestion == null, ErrorCode.NOT_FOUND_ERROR);
         boolean result = reviewService.doReview(oldQuestion, reviewRequest, request);
         return ResultUtils.success(result);
+    }
+
+    /**
+     * 批量删除题目（给管理员使用）
+     * @param questionBatchDeleteRequest
+     * @param request
+     * @return
+     */
+    @PostMapping("/delete/batch")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> batchDeleteQuestions(@RequestBody QuestionBatchDeleteRequest questionBatchDeleteRequest,
+                                                      HttpServletRequest request) {
+        ThrowUtils.throwIf(questionBatchDeleteRequest == null, ErrorCode.PARAMS_ERROR);
+        questionService.batchDeleteQuestions(questionBatchDeleteRequest.getQuestionIdList());
+        return ResultUtils.success(true);
     }
 }

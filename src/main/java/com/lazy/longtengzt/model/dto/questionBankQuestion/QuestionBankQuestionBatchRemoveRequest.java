@@ -6,13 +6,13 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * 批量创建题库题目关联请求
+ * 批量从题库移除题目关联请求
  *
  * @author <a href="https://github.com/liyupi">程序员鱼皮</a>
  * @from <a href="https://www.code-nav.cn">编程导航学习圈</a>
  */
 @Data
-public class QuestionBankQuestionBatchAddRequest implements Serializable {
+public class QuestionBankQuestionBatchRemoveRequest implements Serializable {
 
     /**
      * 题库 id
