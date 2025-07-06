@@ -6,7 +6,7 @@ import {
   deleteQuestionUsingPost,
   listQuestionByPageUsingPost,
 } from "@/api/questionController";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, RobotOutlined } from "@ant-design/icons";
 import type { ActionType, ProColumns } from "@ant-design/pro-components";
 import { PageContainer, ProTable } from "@ant-design/pro-components";
 import {Button, message, Popconfirm, Space, Table, Typography} from "antd";
@@ -17,6 +17,7 @@ import UpdateBankModal from "@/app/admin/question/components/UpdateBankModal";
 import ReviewModal from "@/app/admin/question/components/ReviewModal";
 import BatchAddQuestionsToBankModal from "@/app/admin/question/components/BatchAddQuestionToBankModal";
 import BatchRemoveQuestionsFromBankModal from "@/app/admin/question/components/BatchRemoveQuestionFromBankModal";
+import AIGenerateModal from "./components/AIGenerateModal";
 
 /**
  * 题目管理页面
@@ -43,6 +44,8 @@ const QuestionAdminPage: React.FC = () => {
     batchRemoveQuestionsFromBankModalVisible,
     setBatchRemoveQuestionsFromBankModalVisible,
   ] = useState<boolean>(false);
+  // 是否显示AI生成题目弹窗
+  const [aiGenerateModalVisible, setAiGenerateModalVisible] = useState<boolean>(false);
   // 当前选中的题目 id 列表
   const [selectedQuestionIdList, setSelectedQuestionIdList] = useState<
     number[]
@@ -94,6 +97,7 @@ const QuestionAdminPage: React.FC = () => {
     }
   };
 
+  // @ts-ignore
   /**
    * 表格列配置
    */
@@ -122,10 +126,10 @@ const QuestionAdminPage: React.FC = () => {
       hideInSearch: true,
       width: 240,
       ellipsis: true,
-      renderFormItem: (item, { fieldProps }, form) => {
+      renderFormItem: (item, config, form) => {
         // 编写要渲染的表单项
         // value 和 onchange 会通过 form 自动注入
-        return <MdEditor {...fieldProps} />;
+        return <MdEditor {...config} />;
       },
     },
     {
@@ -135,10 +139,10 @@ const QuestionAdminPage: React.FC = () => {
       hideInSearch: true,
       width: 240,
       ellipsis: true,
-      renderFormItem: (item, { fieldProps }, form) => {
+      renderFormItem: (item, config, form) => {
         // 编写要渲染的表单项
         // value 和 onchange 会通过 form 自动注入
-        return <MdEditor {...fieldProps} />;
+        return <MdEditor {...config} />;
       },
     },
     {
@@ -347,6 +351,16 @@ const QuestionAdminPage: React.FC = () => {
         toolBarRender={() => [
           <Button
             type="primary"
+            key="ai-generate"
+            onClick={() => {
+              setAiGenerateModalVisible(true);
+            }}
+            icon={<RobotOutlined />}
+          >
+            AI生成题目
+          </Button>,
+          <Button
+            type="primary"
             key="primary"
             onClick={() => {
               setCreateModalVisible(true);
@@ -436,6 +450,16 @@ const QuestionAdminPage: React.FC = () => {
           }}
           onCancel={() => {
             setBatchRemoveQuestionsFromBankModalVisible(false);
+          }}
+      />
+      <AIGenerateModal
+        visible={aiGenerateModalVisible}
+        onSuccess={() => {
+          setAiGenerateModalVisible(false);
+          actionRef.current?.reload();
+        }}
+        onClose={() => {
+          setAiGenerateModalVisible(false);
           }}
       />
     </PageContainer>

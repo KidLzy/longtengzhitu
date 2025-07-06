@@ -1,0 +1,72 @@
+#userCenterPage {
+    width: 100%;
+}
+
+.maxWidthContent {
+    max-width: 1600px;
+    padding: 20px;
+    margin: 0 auto;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+}
+
+/* 页面淡入效果 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fadeIn {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* 加载容器样式 */
+.loadingContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 70vh;
+    z-index: 5;
+    position: relative;
+}
+
+/* 右侧列样式 */
+.rightColumn {
+    display: flex;
+    flex-direction: column;
+    z-index: 5;
+    position: relative;
+}
+
+/* 标签卡片样式 */
+.tabCard {
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    height: 100%;
+}
+
+/* 内容区域样式 */
+.contentSection {
+    padding: 16px;
+    border-radius: 8px;
+    background: #fff;
+}
+
+/* 编辑模态框样式 */
+.editModal {
+    border-radius: 16px;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .maxWidthContent {
+        padding: 12px;
+    }
+}

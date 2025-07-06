@@ -2,14 +2,29 @@
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import "./globals.css";
 import BasicLayout from "@/layouts/BasicLayout";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import store, { AppDispatch } from "@/stores";
 import { Provider, useDispatch } from "react-redux";
 import { getLoginUserUsingGet } from "@/api/userController";
 import { setLoginUser } from "@/stores/loginUser";
 import AccessLayout from "@/access/AccessLayout";
 import LoginUserVO = API.LoginUserVO;
+import { App } from "antd";
 
+/**
+ * 客户端专用组件，确保在客户端渲染
+ */
+const ClientOnly: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }) => {
+  const [isClient, setIsClient] = useState(false);
+  
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+  
+  return isClient ? <>{children}</> : null;
+};
 
 /**
  * 执行初始化逻辑的布局（多封装一层）
@@ -56,14 +71,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh">
-      <body>
+    <html lang="zh" suppressHydrationWarning>
+      <body suppressHydrationWarning>
         <AntdRegistry>
           <Provider store={store}>
             <InitLayout>
-              <BasicLayout>
-                <AccessLayout>{children}</AccessLayout>
-              </BasicLayout>
+              <ClientOnly>
+                <App>
+                  <BasicLayout>
+                    <AccessLayout>{children}</AccessLayout>
+                  </BasicLayout>
+                </App>
+              </ClientOnly>
             </InitLayout>
           </Provider>
         </AntdRegistry>

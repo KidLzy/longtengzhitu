@@ -29,6 +29,18 @@ declare namespace API {
     message?: string;
   };
 
+  type BaseResponseMockInterview_ = {
+    code?: number;
+    data?: MockInterview;
+    message?: string;
+  };
+
+  type BaseResponsePageMockInterview_ = {
+    code?: number;
+    data?: PageMockInterview_;
+    message?: string;
+  };
+
   type BaseResponsePagePost_ = {
     code?: number;
     data?: PagePost_;
@@ -146,6 +158,46 @@ declare namespace API {
     id?: number;
   };
 
+  type doLoginUsingDELETEParams = {
+    /** password */
+    password?: string;
+    /** username */
+    username?: string;
+  };
+
+  type doLoginUsingGETParams = {
+    /** password */
+    password?: string;
+    /** username */
+    username?: string;
+  };
+
+  type doLoginUsingPATCHParams = {
+    /** password */
+    password?: string;
+    /** username */
+    username?: string;
+  };
+
+  type doLoginUsingPOSTParams = {
+    /** password */
+    password?: string;
+    /** username */
+    username?: string;
+  };
+
+  type doLoginUsingPUTParams = {
+    /** password */
+    password?: string;
+    /** username */
+    username?: string;
+  };
+
+  type getMockInterviewByIdUsingGETParams = {
+    /** id */
+    id?: number;
+  };
+
   type getPostVOByIdUsingGETParams = {
     /** id */
     id?: number;
@@ -196,17 +248,73 @@ declare namespace API {
 
   type LoginUserVO = {
     createTime?: string;
+    email?: string;
+    expertiseDirection?: string;
+    grade?: string;
     id?: number;
+    phoneNumber?: string;
     updateTime?: string;
     userAvatar?: string;
     userName?: string;
     userProfile?: string;
     userRole?: string;
+    workExperience?: string;
+  };
+
+  type MockInterview = {
+    createTime?: string;
+    difficulty?: string;
+    id?: number;
+    isDelete?: number;
+    jobPosition?: string;
+    messages?: string;
+    status?: number;
+    updateTime?: string;
+    userId?: number;
+    workExperience?: string;
+  };
+
+  type MockInterviewAddRequest = {
+    difficulty?: string;
+    jobPosition?: string;
+    workExperience?: string;
+  };
+
+  type MockInterviewEventRequest = {
+    event?: string;
+    id?: number;
+    message?: string;
+  };
+
+  type MockInterviewQueryRequest = {
+    current?: number;
+    difficulty?: string;
+    id?: number;
+    jobPosition?: string;
+    pageSize?: number;
+    sortField?: string;
+    sortOrder?: string;
+    status?: number;
+    userId?: number;
+    workExperience?: string;
   };
 
   type OrderItem = {
     asc?: boolean;
     column?: string;
+  };
+
+  type PageMockInterview_ = {
+    countId?: string;
+    current?: number;
+    maxLimit?: number;
+    optimizeCountSql?: boolean;
+    orders?: OrderItem[];
+    pages?: number;
+    records?: MockInterview[];
+    searchCount?: boolean;
+    size?: number;
+    total?: number;
   };
 
   type PagePost_ = {
@@ -449,6 +557,11 @@ declare namespace API {
     title?: string;
   };
 
+  type QuestionAIGenerateRequest = {
+    number?: number;
+    questionType?: string;
+  };
+
   type QuestionBank = {
     createTime?: string;
     description?: string;
@@ -660,10 +773,14 @@ declare namespace API {
   type User = {
     createTime?: string;
     editTime?: string;
+    email?: string;
+    expertiseDirection?: string;
+    grade?: string;
     id?: number;
     inviteUser?: number;
     isDelete?: number;
     mpOpenId?: string;
+    phoneNumber?: string;
     shareCode?: string;
     unionId?: string;
     updateTime?: string;
@@ -676,6 +793,7 @@ declare namespace API {
     vipCode?: string;
     vipExpireTime?: string;
     vipNumber?: number;
+    workExperience?: string;
   };
 
   type UserAddRequest = {
@@ -683,6 +801,17 @@ declare namespace API {
     userAvatar?: string;
     userName?: string;
     userRole?: string;
+  };
+
+  type UserEditRequest = {
+    email?: string;
+    expertiseDirection?: string;
+    grade?: string;
+    phoneNumber?: string;
+    userAvatar?: string;
+    userName?: string;
+    userProfile?: string;
+    workExperience?: string;
   };
 
   type userLoginByWxOpenUsingGETParams = {

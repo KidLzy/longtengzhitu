@@ -1,8 +1,9 @@
 "use client";
-import { Card, List } from "antd";
+import { List } from "antd";
 import "./index.css";
 import TagList from "@/components/TagList";
 import Link from "next/link";
+import { FileTextOutlined } from "@ant-design/icons";
 
 interface Props {
   questionBankId?: number;
@@ -19,28 +20,39 @@ const QuestionList = (props: Props) => {
   const { questionList = [], cardTitle, questionBankId } = props;
 
   return (
-    <Card className="question-list" title={cardTitle}>
+    <div className="question-list-container">
+      {cardTitle && <div className="question-list-title">{cardTitle}</div>}
       <List
+        className="question-list"
+        itemLayout="horizontal"
         dataSource={questionList}
         renderItem={(item: API.QuestionVO) => (
-          <List.Item extra={<TagList tagList={item.tagList} />}>
-            <List.Item.Meta
-              title={
-                <Link
-                  href={
-                    questionBankId
-                      ? `/bank/${questionBankId}/question/${item.id}`
-                      : `/question/${item.id}`
-                  }
-                >
-                  {item.title}
-                </Link>
+          <List.Item className="question-item">
+            <Link
+              href={
+                questionBankId
+                  ? `/bank/${questionBankId}/question/${item.id}`
+                  : `/question/${item.id}`
               }
-            />
+              className="question-link"
+            >
+              <div className="question-content">
+                <div className="question-header">
+                  <div className="question-title">
+                    <FileTextOutlined className="question-icon" />
+                    {item.title}
+                  </div>
+                </div>
+                <div className="question-tags">
+                  <TagList tagList={item.tagList} />
+                </div>
+              </div>
+            </Link>
           </List.Item>
         )}
+        locale={{ emptyText: "暂无题目，敬请期待" }}
       />
-    </Card>
+    </div>
   );
 };
 

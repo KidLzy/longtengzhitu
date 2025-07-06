@@ -4,10 +4,12 @@ import {
   LogoutOutlined,
   SearchOutlined,
   UserOutlined,
+  HomeOutlined,
+  BellOutlined,
 } from "@ant-design/icons";
 import { ProLayout } from "@ant-design/pro-components";
-import { Dropdown, Input, message } from "antd";
-import React, { useState } from "react";
+import { Dropdown, Input, message, App, Badge, Tooltip, Avatar } from "antd";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -20,6 +22,7 @@ import { userLogoutUsingPost } from "@/api/userController";
 import { setLoginUser } from "@/stores/loginUser";
 import { DEFAULT_USER } from "@/constants/user";
 import SearchInput from "@/layouts/BasicLayout/components/SearchInput";
+import "./index.css";
 
 interface Props {
   children: React.ReactNode;
@@ -30,6 +33,24 @@ export default function BasicLayout({ children }: Props) {
   const loginUser = useSelector((state: RootState) => state.loginUser);
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
+  const { message: messageApi } = App.useApp();
+  const [headerClass, setHeaderClass] = useState("");
+
+  // 监听滚动事件，添加导航栏滚动效果
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 20) {
+        setHeaderClass("scrolled");
+      } else {
+        setHeaderClass("");
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   /**
    * 用户注销
@@ -37,12 +58,64 @@ export default function BasicLayout({ children }: Props) {
   const userLogout = async () => {
     try {
       await userLogoutUsingPost();
-      message.success("已退出登录");
+      messageApi.success("已退出登录");
       dispatch(setLoginUser(DEFAULT_USER));
       router.push("/user/login");
     } catch (e){
-      message.error("退出登录失败"+ (e as any).message);
+      messageApi.error("退出登录失败"+ (e as any).message);
     }
+  };
+
+  // 自定义头像组件
+  const AvatarDropdown = () => {
+    if (!loginUser.id) {
+      return (
+        <Tooltip title="点击登录" placement="bottom">
+          <Avatar
+            src="/assets/notLoginUser.png"
+            size="small"
+            className="header-avatar not-login"
+            onClick={() => router.push("/user/login")}
+          />
+        </Tooltip>
+      );
+    }
+
+    return (
+      <Dropdown
+        menu={{
+          items: [
+            {
+              key: "userCenter",
+              icon: <UserOutlined />,
+              label: "个人中心",
+            },
+            {
+              key: "logout",
+              icon: <LogoutOutlined />,
+              label: "退出登录",
+            },
+          ],
+          onClick: async (event: { key: React.Key }) => {
+            const { key } = event;
+            if (key === "logout") {
+              userLogout();
+            } else if (key === "userCenter") {
+              router.push("/user/center");
+            }
+          },
+        }}
+      >
+        <div className="avatar-container">
+          <Avatar
+            src={loginUser.userAvatar || "/assets/notLoginUser.png"}
+            size="small"
+            className="header-avatar"
+          />
+          <span className="avatar-name">{loginUser.userName || "用户"}</span>
+        </div>
+      </Dropdown>
+    );
   };
 
   return (
@@ -61,97 +134,62 @@ export default function BasicLayout({ children }: Props) {
             src="/assets/logo.png"
             height={32}
             width={32}
-            alt="龙腾智途刷题网站 - 程序员lazy"
+            alt="龙腾智途刷题网站"
+            style={{ width: 'auto', height: 'auto' }}
           />
         }
         location={{
           pathname,
         }}
-        avatarProps={{
-          src: loginUser.userAvatar || "/assets/logo.png",
-          size: "small",
-          title: loginUser.userName || "懒惰",
-          render: (props, dom) => {
-            if (!loginUser.id) {
-              return (
-                  <div
-                      onClick={() => {
-                        router.push("/user/login");
-                      }}
-                  >
-                    {dom}
-                  </div>
-              );
-            }
-            return (
-              <Dropdown
-                menu={{
-                  items: [
-                    {
-                      key: "userCenter",
-                      icon: <UserOutlined />,
-                      label: "个人中心",
-                    },
-                    {
-                      key: "logout",
-                      icon: <LogoutOutlined />,
-                      label: "退出登录",
-                    },
-                  ],
-                  onClick: async (event: { key: React.Key }) => {
-                    const { key } = event;
-                    if (key === "logout") {
-                      userLogout();
-                    } else if (key === "userCenter") {
-                      router.push("/user/center");
-                    }
-                  },
-                }}
-              >
-                {dom}
-              </Dropdown>
-            );
-          },
-        }}
+        headerClassName={headerClass}
+        avatarProps={false}
         actionsRender={(props) => {
           if (props.isMobile) return [];
           return [
             <SearchInput key="search" />,
-            <a
-              key="github"
-              href="https://github.com/KidLzy/longtengzhitu"
-              target="_blank"
-            >
-              <GithubFilled key="GithubFilled" />
-            </a>,
+            <Tooltip title="通知" key="notification">
+              <Badge count={0} dot>
+                <BellOutlined className="action-icon" />
+              </Badge>
+            </Tooltip>,
+            <Tooltip title="GitHub" key="github">
+              <a
+                href="https://github.com/KidLzy/longtengzhitu"
+                target="_blank"
+                className="github-link"
+              >
+                <GithubFilled className="action-icon" />
+              </a>
+            </Tooltip>,
+            <AvatarDropdown key="avatar" />,
           ];
         }}
         headerTitleRender={(logo, title, _) => {
           const defaultDom = (
-            <a>
+            <Link href="/" className="header-logo-link">
               {logo}
-              {title}
-            </a>
+              <span className="header-title">{title}</span>
+            </Link>
           );
-          if (typeof window === "undefined") return defaultDom;
-          if (document.body.clientWidth < 1400) {
-            return defaultDom;
+          if (typeof window !== "undefined") {
+            if (document.body.clientWidth < 1400 || _.isMobile) {
+              return defaultDom;
+            }
           }
-          if (_.isMobile) return defaultDom;
           return <>{defaultDom}</>;
         }}
         // 渲染底部栏
         footerRender={() => {
           return <GlobalFooter />;
         }}
-        onMenuHeaderClick={(e) => console.log(e)}
+        onMenuHeaderClick={(e) => router.push("/")}
         // 定义有哪些菜单
         menuDataRender={() => {
           return getAccessibleMenus(loginUser, menus);
         }}
         // 定义菜单项如何渲染
         menuItemRender={(item, dom) => (
-          <Link href={item.path || "/"} target={item.target}>
+          <Link href={item.path || "/"} target={item.target} className="menu-item-link">
             {dom}
           </Link>
         )}

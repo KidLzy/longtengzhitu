@@ -17,6 +17,24 @@ export async function addQuestionUsingPost(
   });
 }
 
+/** aiGenerateQuestions POST /api/question/ai/generate/questions */
+export async function aiGenerateQuestionsUsingPost(
+  body: API.QuestionAIGenerateRequest,
+  options?: { [key: string]: any }
+) {
+  return request<API.BaseResponseBoolean_>(
+    "/api/question/ai/generate/questions",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: body,
+      ...(options || {}),
+    }
+  );
+}
+
 /** deleteQuestion POST /api/question/delete */
 export async function deleteQuestionUsingPost(
   body: API.DeleteRequest,
@@ -99,6 +117,24 @@ export async function listQuestionVoByPageUsingPost(
 ) {
   return request<API.BaseResponsePageQuestionVO_>(
     "/api/question/list/page/vo",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: body,
+      ...(options || {}),
+    }
+  );
+}
+
+/** listQuestionVOByPageSentinel POST /api/question/list/page/vo/sentinel */
+export async function listQuestionVoByPageSentinelUsingPost(
+  body: API.QuestionQueryRequest,
+  options?: { [key: string]: any }
+) {
+  return request<API.BaseResponsePageQuestionVO_>(
+    "/api/question/list/page/vo/sentinel",
     {
       method: "POST",
       headers: {

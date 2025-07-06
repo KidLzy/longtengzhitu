@@ -1,36 +1,112 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 龙腾智途 - 智能面试刷题平台
 
-## Getting Started
+<div align="center">
+  <img src="public/assets/logo.png" alt="龙腾智途首页" width="100%"/>
+  <p>专注于帮助开发者提升编程技能、准备技术面试的综合学习平台。海量题库、智能模拟面试、个性化学习路径，助你在技术之路上乘风破浪！</p>
+</div>
 
-First, run the development server:
+![龙腾智途首页](https://lazy-tuchuan-1329656616.cos.ap-guangzhou.myqcloud.com/typoraimage-20250706184706483.png)
+
+## 项目简介
+
+龙腾智途是一个智能面试刷题平台，致力于为求职者提供高效的面试准备解决方案。平台集成了题库管理、智能刷题、模拟面试等功能，帮助用户系统性地提升面试技能。
+
+## 技术栈
+
+- **前端框架**: [Next.js](https://nextjs.org) (App Router)
+- **UI 组件**: React组件
+- **状态管理**: 自定义Stores
+- **API通信**: 自定义request封装
+- **开发语言**: TypeScript
+- **样式方案**: CSS Modules + 全局CSS
+- **Markdown渲染**: 自定义MdEditor和MdViewer组件
+
+## 功能特性
+
+- **用户系统**
+  - 登录/注册功能
+  - 个人中心与资料管理
+  - 打卡日历展示
+  
+- **题库系统**
+  - 题库浏览与管理
+  - 题目收藏与点赞
+  - 标签分类系统
+  
+- **智能刷题**
+  - 题目详情页与解答
+  - AI辅助题目生成
+  - 批量题目管理
+  
+- **模拟面试**
+  - 面试模拟与评估
+  - 面试记录管理
+  
+- **后台管理**
+  - 用户管理
+  - 题库管理
+  - 题目管理
+  - 模拟面试管理
+
+## 快速开始
+
+### 环境要求
+
+- Node.js 16.x 或更高版本
+- npm 7.x 或更高版本
+
+### 安装依赖
+
+```bash
+npm install
+```
+
+### 启动开发服务器
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+启动后访问 [http://localhost:3000](http://localhost:3000) 查看应用。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 构建生产版本
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+```
 
-## Learn More
+### 运行生产版本
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run start
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 项目结构
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `src/app`: 页面路由与组件
+- `src/components`: 公共组件
+- `src/api`: API接口定义
+- `src/hooks`: 自定义React Hooks
+- `src/stores`: 状态管理
+- `src/layouts`: 布局组件
+- `src/libs`: 工具函数库
+- `src/access`: 权限控制
 
-## Deploy on Vercel
+## 贡献指南
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Fork 本仓库
+2. 创建你的特性分支 (`git checkout -b feature/amazing-feature`)
+3. 提交你的更改 (`git commit -m 'Add some amazing feature'`)
+4. 推送到分支 (`git push origin feature/amazing-feature`)
+5. 创建一个 Pull Request
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 许可证
+
+[待定]
+
+## 联系我们
+
+如有任何问题或建议，请通过以下方式联系我们：
+
+- 项目主页: [待定]
+- 邮箱: [待定]

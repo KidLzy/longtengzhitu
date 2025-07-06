@@ -1,2 +1,201 @@
 #homePage {
+  padding: 2rem 1rem;
+  background: linear-gradient(to bottom, #f8f9ff, #ffffff);
+  min-height: 100vh;
+}
+
+/* 龙腾智途主题样式 */
+.home-hero {
+  margin-bottom: 3rem;
+  padding: 4rem 0;
+  background: linear-gradient(135deg, #1e40af, #3b82f6);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(22, 119, 255, 0.15);
+  color: white;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.home-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+  opacity: 0.2;
+}
+
+/* 龙图腾元素 */
+.dragon-element {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='400' viewBox='0 0 800 400' fill='none'%3E%3Cpath d='M400 50C450 80 500 100 550 90C600 80 650 50 700 70C750 90 780 150 750 200C720 250 650 280 600 250C550 220 530 150 500 120C470 90 430 80 400 100C370 120 350 160 320 180C290 200 250 200 220 180C190 160 170 120 150 100C130 80 100 80 80 100C60 120 50 160 70 200C90 240 130 270 180 270C230 270 280 240 320 200C360 160 390 120 400 100' stroke='%23ffffff' stroke-opacity='0.1' stroke-width='8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  opacity: 0.15;
+  z-index: 0;
+}
+
+.home-hero h1 {
+  font-size: 2.8rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  position: relative;
+  z-index: 1;
+}
+
+.home-hero p {
+  font-size: 1.2rem;
+  max-width: 700px;
+  margin: 0 auto 1.5rem;
+  opacity: 0.9;
+  position: relative;
+  z-index: 1;
+}
+
+.home-hero-buttons {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-top: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.home-hero-button {
+  padding: 0.85rem 2rem;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.home-hero-button-primary {
+  background-color: white;
+  color: #1e40af;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.home-hero-button-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  background-color: #f9fafb;
+}
+
+/* 标题样式 */
+#homePage .ant-typography {
+  position: relative;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 1.5rem;
+  display: inline-block;
+}
+
+#homePage .ant-typography::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 40px;
+  height: 4px;
+  background: linear-gradient(to right, #1e40af, #3b82f6);
+  border-radius: 2px;
+}
+
+/* 链接样式 */
+#homePage a {
+  color: #1e40af;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+#homePage a:hover {
+  background-color: rgba(30, 64, 175, 0.1);
+  color: #1e3a8a;
+}
+
+/* 分割线样式 */
+#homePage .ant-divider {
+  margin: 3rem 0;
+  border-color: #e5e7eb;
+}
+
+/* 卡片动画效果 */
+#homePage .question-bank-card,
+#homePage .question-card {
+  transition: all 0.3s ease;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+#homePage .question-bank-card:hover,
+#homePage .question-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(30, 64, 175, 0.1);
+  border-color: rgba(30, 64, 175, 0.3);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  #homePage {
+    padding: 1.5rem 1rem;
+  }
+  
+  .home-hero {
+    padding: 3rem 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .home-hero h1 {
+    font-size: 2.2rem;
+  }
+  
+  .home-hero p {
+    font-size: 1rem;
+  }
+  
+  .home-hero-buttons {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .home-hero-button {
+    width: 80%;
+  }
+}
+
+/* 动画效果 */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.floating-element {
+  animation: float 6s ease-in-out infinite;
 }

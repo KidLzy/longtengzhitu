@@ -1,3 +1,152 @@
 .question-bank-list {
+  margin-bottom: 2rem;
+}
 
+.question-bank-list .ant-list-item {
+  height: auto;
+  margin-bottom: 16px;
+}
+
+.question-bank-card {
+  height: 100%;
+  transition: all 0.3s;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  background-color: #fff;
+  border: 1px solid #f0f0f0;
+  position: relative;
+}
+
+.question-bank-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  border-color: rgba(22, 119, 255, 0.2);
+}
+
+.question-bank-card:hover .bank-highlight {
+  opacity: 1;
+}
+
+.bank-highlight {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: #ff6b35;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.question-bank-card a {
+  display: flex;
+  padding: 20px;
+  text-decoration: none;
+  color: inherit;
+  height: 100%;
+}
+
+.bank-icon-container {
+  margin-right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.bank-icon {
+  font-size: 28px;
+  padding: 10px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+}
+
+.bank-avatar {
+  border-radius: 8px;
+}
+
+.bank-icon.java {
+  color: #E76F00;
+  background-color: #f8f0e5;
+}
+
+.bank-icon.python {
+  color: #3776AB;
+  background-color: #e9f0f8;
+}
+
+.bank-icon.database {
+  color: #4479A1;
+  background-color: #e9f0f8;
+}
+
+.bank-icon.html {
+  color: #E34F26;
+  background-color: #fdf0eb;
+}
+
+.bank-icon.vm {
+  color: #5382a1;
+  background-color: #edf2f8;
+}
+
+.bank-icon.default {
+  color: #1677ff;
+  background-color: #e6f4ff;
+}
+
+.bank-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.bank-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.bank-description {
+  color: #64748b;
+  font-size: 14px;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+  max-height: 1.5em;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .question-bank-card a {
+    padding: 16px;
+  }
+  
+  .bank-icon-container {
+    margin-right: 12px;
+  }
+  
+  .bank-icon {
+    font-size: 24px;
+    padding: 8px;
+    width: 40px;
+    height: 40px;
+  }
 }

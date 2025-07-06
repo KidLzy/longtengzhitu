@@ -1,3 +1,19 @@
 {
-  "extends": ["next/core-web-vitals", "next/typescript", "prettier"]
+  "extends": [
+    "next/core-web-vitals",
+    "next/typescript",
+    "prettier"
+  ],
+  "settings": {},
+  "parserOptions": {},
+  "parser": "",
+  "ignorePatterns":,
+  "plugins": [],
+  "globals": {},
+  "root": false,
+  "rules": {},
+  "overrides": [],
+  "env": {},
+  "noInlineConfig": false,
+  "ecmaFeatures": {}
 }

@@ -1,3 +1,23 @@
 .tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
 
+.tag-list .ant-tag {
+  margin: 0;
+  border-radius: 4px;
+  padding: 0 8px;
+  font-size: 12px;
+  transition: all 0.3s;
+  border: 1px solid #e5e7eb;
+  background-color: #f8fafc;
+  color: #64748b;
+}
+
+.tag-list .ant-tag:hover {
+  color: #1677ff;
+  border-color: rgba(22, 119, 255, 0.3);
+  background-color: rgba(22, 119, 255, 0.05);
+  transform: translateY(-1px);
 }
