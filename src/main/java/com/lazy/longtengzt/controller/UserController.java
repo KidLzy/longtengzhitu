@@ -12,6 +12,7 @@ import com.lazy.longtengzt.common.ErrorCode;
 import com.lazy.longtengzt.common.ResultUtils;
 import com.lazy.longtengzt.config.WxOpenConfig;
 import com.lazy.longtengzt.model.dto.user.UserAddRequest;
+import com.lazy.longtengzt.model.dto.user.UserEditRequest;
 import com.lazy.longtengzt.model.dto.user.UserLoginRequest;
 import com.lazy.longtengzt.model.dto.user.UserQueryRequest;
 import com.lazy.longtengzt.model.dto.user.UserRegisterRequest;
@@ -46,8 +47,7 @@ import static com.lazy.longtengzt.service.impl.UserServiceImpl.SALT;
 /**
  * 用户接口
  *
- * @author <a href="https://github.com/liyupi">程序员鱼皮</a>
- * @from <a href="https://yupi.icu">编程导航知识星球</a>
+ * @author: Lazy
  */
 @RestController
 @RequestMapping("/user")
@@ -215,6 +215,32 @@ public class UserController {
         }
         User user = new User();
         BeanUtils.copyProperties(userUpdateRequest, user);
+        boolean result = userService.updateById(user);
+        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
+        return ResultUtils.success(true);
+    }
+
+    /**
+     * 编辑用户信息（管理员和用户自身均可使用）
+     *
+     * 使用 MyBatis Plus 的 LambdaUpdateWrapper 实现动态更新
+     *
+     * @param userEditRequest 编辑请求
+     * @param request HTTP请求
+     * @return 是否编辑成功
+     */
+    @PostMapping("/edit")
+    public BaseResponse<Boolean> editUser(@RequestBody UserEditRequest userEditRequest, HttpServletRequest request) {
+        if (userEditRequest == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        // 获取当前登录用户
+        User loginUser = userService.getLoginUser(request);
+        // 构建更新对象
+        User user = new User();
+        BeanUtils.copyProperties(userEditRequest, user);
+        // 如果是用户编辑自己，强制设置 ID 为当前用户 ID（防止越权修改）
+        user.setId(loginUser.getId());
         boolean result = userService.updateById(user);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(true);

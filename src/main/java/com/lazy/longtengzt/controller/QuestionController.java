@@ -2,6 +2,7 @@ package com.lazy.longtengzt.controller;
 
 import cn.dev33.satoken.annotation.SaCheckRole;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.csp.sentinel.Entry;
 import com.alibaba.csp.sentinel.EntryType;
@@ -65,13 +66,14 @@ public class QuestionController {
      */
     @PostMapping("/add")
     @SaCheckRole(UserConstant.ADMIN_ROLE)
-    public BaseResponse<Long> addQuestion(@RequestBody QuestionAddRequest questionAddRequest, HttpServletRequest request) {
+    public BaseResponse<Long> addQuestion(@RequestBody QuestionAddRequest questionAddRequest,
+                                          HttpServletRequest request) {
         ThrowUtils.throwIf(questionAddRequest == null, ErrorCode.PARAMS_ERROR);
         // todo 在此处将实体类和 DTO 进行转换
         Question question = new Question();
         BeanUtils.copyProperties(questionAddRequest, question);
         List<String> tags = questionAddRequest.getTags();
-        if(tags!=null){
+        if (tags != null) {
             question.setTags(JSONUtil.toJsonStr(tags));
         }
         // 数据校验
@@ -96,7 +98,8 @@ public class QuestionController {
      */
     @PostMapping("/delete")
     @SaCheckRole(UserConstant.ADMIN_ROLE)
-    public BaseResponse<Boolean> deleteQuestion(@RequestBody DeleteRequest deleteRequest, HttpServletRequest request) {
+    public BaseResponse<Boolean> deleteQuestion(@RequestBody DeleteRequest deleteRequest,
+                                                HttpServletRequest request) {
         if (deleteRequest == null || deleteRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -123,7 +126,8 @@ public class QuestionController {
      */
     @PostMapping("/update")
     @SaCheckRole(UserConstant.ADMIN_ROLE)
-    public BaseResponse<Boolean> updateQuestion(@RequestBody QuestionUpdateRequest questionUpdateRequest) {
+    public BaseResponse<Boolean> updateQuestion(
+        @RequestBody QuestionUpdateRequest questionUpdateRequest) {
         if (questionUpdateRequest == null || questionUpdateRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -131,7 +135,7 @@ public class QuestionController {
         Question question = new Question();
         BeanUtils.copyProperties(questionUpdateRequest, question);
         List<String> tags = questionUpdateRequest.getTags();
-        if(tags!=null){
+        if (tags != null) {
             question.setTags(JSONUtil.toJsonStr(tags));
         }
         // 数据校验
@@ -175,6 +179,7 @@ public class QuestionController {
 
     /**
      * 检测爬虫
+     *
      * @param loginUserId
      */
     private void crawlerDetect(long loginUserId) {
@@ -187,7 +192,7 @@ public class QuestionController {
         // 统计一分钟内访问次数，180 秒过期
         long count = counterManager.incrAndGetCounter(key, 1, TimeUnit.MINUTES, 180);
         // 是否封号
-        if( count >= BAN_COUNT){
+        if (count >= BAN_COUNT) {
             // 踢下线
             StpUtil.kickout(loginUserId);
             // 封号
@@ -212,7 +217,8 @@ public class QuestionController {
      */
     @PostMapping("/list/page")
     @SaCheckRole(UserConstant.ADMIN_ROLE)
-    public BaseResponse<Page<Question>> listQuestionByPage(@RequestBody QuestionQueryRequest questionQueryRequest) {
+    public BaseResponse<Page<Question>> listQuestionByPage(
+        @RequestBody QuestionQueryRequest questionQueryRequest) {
         ThrowUtils.throwIf(questionQueryRequest == null, ErrorCode.PARAMS_ERROR);
         // 查询数据库
         Page<Question> questionPage = questionService.listQuestionByPage(questionQueryRequest);
@@ -227,15 +233,16 @@ public class QuestionController {
      * @return
      */
     @PostMapping("/list/page/vo")
-    public BaseResponse<Page<QuestionVO>> listQuestionVOByPage(@RequestBody QuestionQueryRequest questionQueryRequest,
-                                                               HttpServletRequest request) {
+    public BaseResponse<Page<QuestionVO>> listQuestionVOByPage(
+        @RequestBody QuestionQueryRequest questionQueryRequest,
+        HttpServletRequest request) {
         long current = questionQueryRequest.getCurrent();
         long size = questionQueryRequest.getPageSize();
         // 限制爬虫
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
         // 查询数据库
         Page<Question> questionPage = questionService.page(new Page<>(current, size),
-                questionService.getQueryWrapper(questionQueryRequest));
+            questionService.getQueryWrapper(questionQueryRequest));
         // 获取封装类
         return ResultUtils.success(questionService.getQuestionVOPage(questionPage, request));
     }
@@ -248,8 +255,9 @@ public class QuestionController {
      * @return
      */
     @PostMapping("/list/page/vo/sentinel")
-    public BaseResponse<Page<QuestionVO>> listQuestionVOByPageSentinel(@RequestBody QuestionQueryRequest questionQueryRequest,
-                                                               HttpServletRequest request) {
+    public BaseResponse<Page<QuestionVO>> listQuestionVOByPageSentinel(
+        @RequestBody QuestionQueryRequest questionQueryRequest,
+        HttpServletRequest request) {
         ThrowUtils.throwIf(questionQueryRequest == null, ErrorCode.PARAMS_ERROR);
         long size = questionQueryRequest.getPageSize();
         // 限制爬虫
@@ -266,7 +274,7 @@ public class QuestionController {
             // 获取封装类
             return ResultUtils.success(questionService.getQuestionVOPage(questionPage, request));
 
-        }catch(Throwable ex) {
+        } catch (Throwable ex) {
             // 业务异常
             if (!BlockException.isBlockException(ex)) {
                 Tracer.trace(ex);
@@ -288,8 +296,9 @@ public class QuestionController {
     /**
      * listQuestionVOByPageSentinel 降级操作：直接返回本地数据（此处为了方便演示，写在同一个类中）
      */
-    public BaseResponse<Page<QuestionVO>> handleFallback(@RequestBody QuestionQueryRequest questionQueryRequest,
-                                                         HttpServletRequest request, Throwable ex) {
+    public BaseResponse<Page<QuestionVO>> handleFallback(
+        @RequestBody QuestionQueryRequest questionQueryRequest,
+        HttpServletRequest request, Throwable ex) {
         // 可以返回本地数据或空数据
         return ResultUtils.success(null);
     }
@@ -302,8 +311,9 @@ public class QuestionController {
      * @return
      */
     @PostMapping("/my/list/page/vo")
-    public BaseResponse<Page<QuestionVO>> listMyQuestionVOByPage(@RequestBody QuestionQueryRequest questionQueryRequest,
-                                                                 HttpServletRequest request) {
+    public BaseResponse<Page<QuestionVO>> listMyQuestionVOByPage(
+        @RequestBody QuestionQueryRequest questionQueryRequest,
+        HttpServletRequest request) {
         ThrowUtils.throwIf(questionQueryRequest == null, ErrorCode.PARAMS_ERROR);
         // 补充查询条件，只查询当前登录用户的数据
         User loginUser = userService.getLoginUser(request);
@@ -314,7 +324,7 @@ public class QuestionController {
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
         // 查询数据库
         Page<Question> questionPage = questionService.page(new Page<>(current, size),
-                questionService.getQueryWrapper(questionQueryRequest));
+            questionService.getQueryWrapper(questionQueryRequest));
         // 获取封装类
         return ResultUtils.success(questionService.getQuestionVOPage(questionPage, request));
     }
@@ -328,7 +338,8 @@ public class QuestionController {
      */
     @PostMapping("/edit")
     @SaCheckRole(UserConstant.ADMIN_ROLE)
-    public BaseResponse<Boolean> editQuestion(@RequestBody QuestionEditRequest questionEditRequest, HttpServletRequest request) {
+    public BaseResponse<Boolean> editQuestion(@RequestBody QuestionEditRequest questionEditRequest,
+                                              HttpServletRequest request) {
         if (questionEditRequest == null || questionEditRequest.getId() <= 0) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
@@ -359,29 +370,33 @@ public class QuestionController {
     // endregion
 
     @PostMapping("/search/page/vo")
-    public BaseResponse<Page<QuestionVO>> searchQuestionVOByPage(@RequestBody QuestionQueryRequest questionQueryRequest,
-                                                                 HttpServletRequest request) {
+    public BaseResponse<Page<QuestionVO>> searchQuestionVOByPage(
+        @RequestBody QuestionQueryRequest questionQueryRequest,
+        HttpServletRequest request) {
         long size = questionQueryRequest.getPageSize();
         // 限制爬虫
         ThrowUtils.throwIf(size > 200, ErrorCode.PARAMS_ERROR);
         Page<Question> questionPage = questionService.searchFromEs(questionQueryRequest);
         return ResultUtils.success(questionService.getQuestionVOPage(questionPage, request));
     }
+
     /**
      * 审核题目（给管理员使用）
+     *
      * @param reviewRequest
      * @param request
      * @return
      */
     @PostMapping("/review")
     @SaCheckRole(UserConstant.ADMIN_ROLE)
-    public BaseResponse<Boolean> reviewQuestion(@RequestBody ReviewRequest reviewRequest, HttpServletRequest request) {
+    public BaseResponse<Boolean> reviewQuestion(@RequestBody ReviewRequest reviewRequest,
+                                                HttpServletRequest request) {
         ThrowUtils.throwIf(reviewRequest == null, ErrorCode.PARAMS_ERROR);
         Long id = reviewRequest.getId();
         Integer reviewStatus = reviewRequest.getReviewStatus();
         // 校验
         ReviewStatusEnum reviewStatusEnum = ReviewStatusEnum.getEnumByValue(reviewStatus);
-        if(id == null || reviewStatusEnum == null){
+        if (id == null || reviewStatusEnum == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
         Question oldQuestion = questionService.getById(id);
@@ -393,16 +408,38 @@ public class QuestionController {
 
     /**
      * 批量删除题目（给管理员使用）
+     *
      * @param questionBatchDeleteRequest
      * @param request
      * @return
      */
     @PostMapping("/delete/batch")
     @SaCheckRole(UserConstant.ADMIN_ROLE)
-    public BaseResponse<Boolean> batchDeleteQuestions(@RequestBody QuestionBatchDeleteRequest questionBatchDeleteRequest,
-                                                      HttpServletRequest request) {
+    public BaseResponse<Boolean> batchDeleteQuestions(
+        @RequestBody QuestionBatchDeleteRequest questionBatchDeleteRequest,
+        HttpServletRequest request) {
         ThrowUtils.throwIf(questionBatchDeleteRequest == null, ErrorCode.PARAMS_ERROR);
         questionService.batchDeleteQuestions(questionBatchDeleteRequest.getQuestionIdList());
+        return ResultUtils.success(true);
+    }
+
+    @PostMapping("/ai/generate/questions")
+    @SaCheckRole(UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> aiGenerateQuestions(
+        @RequestBody QuestionAIGenerateRequest questionAIGenerateRequest,
+        HttpServletRequest request) {
+        String questionType = questionAIGenerateRequest.getQuestionType();
+        int number = questionAIGenerateRequest.getNumber();
+
+        // 校验参数
+        ThrowUtils.throwIf(StrUtil.isBlank(questionType), ErrorCode.PARAMS_ERROR,
+            "题目类型不能为空");
+        ThrowUtils.throwIf(number <= 0, ErrorCode.PARAMS_ERROR, "题目数量必须大于 0");
+        // 获取当前登录用户
+        User loginUser = userService.getLoginUser(request);
+        // 调用 AI 生成题目服务
+        questionService.aiGenerateQuestions(questionType, number, loginUser);
+        // 返回结果
         return ResultUtils.success(true);
     }
 }

@@ -1,6 +1,8 @@
 package com.lazy.longtengzt.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -10,6 +12,7 @@ import com.lazy.longtengzt.common.ErrorCode;
 import com.lazy.longtengzt.constant.CommonConstant;
 import com.lazy.longtengzt.exception.BusinessException;
 import com.lazy.longtengzt.exception.ThrowUtils;
+import com.lazy.longtengzt.manager.AiManager;
 import com.lazy.longtengzt.mapper.QuestionFavourMapper;
 import com.lazy.longtengzt.mapper.QuestionMapper;
 import com.lazy.longtengzt.mapper.QuestionThumbMapper;
@@ -22,6 +25,9 @@ import com.lazy.longtengzt.service.QuestionBankQuestionService;
 import com.lazy.longtengzt.service.QuestionService;
 import com.lazy.longtengzt.service.UserService;
 import com.lazy.longtengzt.utils.SqlUtils;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -31,6 +37,7 @@ import org.elasticsearch.search.sort.ScoreSortBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -53,7 +60,8 @@ import java.util.stream.Collectors;
  */
 @Service
 @Slf4j
-public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> implements QuestionService {
+public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question>
+    implements QuestionService {
 
     @Resource
     private UserService userService;
@@ -69,6 +77,8 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
 
     @Resource
     private ElasticsearchRestTemplate elasticsearchRestTemplate;
+    @Autowired
+    private AiManager aiManager;
 
     /**
      * 校验数据
@@ -142,8 +152,8 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         queryWrapper.eq(ObjectUtils.isNotEmpty(userId), "userId", userId);
         // 排序规则
         queryWrapper.orderBy(SqlUtils.validSortField(sortField),
-                sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
-                sortField);
+            sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
+            sortField);
         return queryWrapper;
     }
 
@@ -183,7 +193,8 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
             QueryWrapper<QuestionFavour> questionFavourQueryWrapper = new QueryWrapper<>();
             questionFavourQueryWrapper.in("questionId", questionId);
             questionFavourQueryWrapper.eq("userId", loginUser.getId());
-            QuestionFavour questionFavour = questionFavourMapper.selectOne(questionFavourQueryWrapper);
+            QuestionFavour questionFavour =
+                questionFavourMapper.selectOne(questionFavourQueryWrapper);
             questionVO.setHasFavour(questionFavour != null);
         }
         // endregion
@@ -199,9 +210,11 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
      * @return
      */
     @Override
-    public Page<QuestionVO> getQuestionVOPage(Page<Question> questionPage, HttpServletRequest request) {
+    public Page<QuestionVO> getQuestionVOPage(Page<Question> questionPage,
+                                              HttpServletRequest request) {
         List<Question> questionList = questionPage.getRecords();
-        Page<QuestionVO> questionVOPage = new Page<>(questionPage.getCurrent(), questionPage.getSize(), questionPage.getTotal());
+        Page<QuestionVO> questionVOPage =
+            new Page<>(questionPage.getCurrent(), questionPage.getSize(), questionPage.getTotal());
         if (CollUtil.isEmpty(questionList)) {
             return questionVOPage;
         }
@@ -213,28 +226,34 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         // todo 可以根据需要为封装对象补充值，不需要的内容可以删除
         // region 可选
         // 1. 关联查询用户信息
-        Set<Long> userIdSet = questionList.stream().map(Question::getUserId).collect(Collectors.toSet());
+        Set<Long> userIdSet =
+            questionList.stream().map(Question::getUserId).collect(Collectors.toSet());
         Map<Long, List<User>> userIdUserListMap = userService.listByIds(userIdSet).stream()
-                .collect(Collectors.groupingBy(User::getId));
+            .collect(Collectors.groupingBy(User::getId));
         // 2. 已登录，获取用户点赞、收藏状态
         Map<Long, Boolean> questionIdHasThumbMap = new HashMap<>();
         Map<Long, Boolean> questionIdHasFavourMap = new HashMap<>();
         User loginUser = userService.getLoginUserPermitNull(request);
         if (loginUser != null) {
-            Set<Long> questionIdSet = questionList.stream().map(Question::getId).collect(Collectors.toSet());
+            Set<Long> questionIdSet =
+                questionList.stream().map(Question::getId).collect(Collectors.toSet());
             loginUser = userService.getLoginUser(request);
             // 获取点赞
             QueryWrapper<QuestionThumb> questionThumbQueryWrapper = new QueryWrapper<>();
             questionThumbQueryWrapper.in("questionId", questionIdSet);
             questionThumbQueryWrapper.eq("userId", loginUser.getId());
-            List<QuestionThumb> questionQuestionThumbList = questionThumbMapper.selectList(questionThumbQueryWrapper);
-            questionQuestionThumbList.forEach(questionQuestionThumb -> questionIdHasThumbMap.put(questionQuestionThumb.getQuestionId(), true));
+            List<QuestionThumb> questionQuestionThumbList =
+                questionThumbMapper.selectList(questionThumbQueryWrapper);
+            questionQuestionThumbList.forEach(questionQuestionThumb -> questionIdHasThumbMap.put(
+                questionQuestionThumb.getQuestionId(), true));
             // 获取收藏
             QueryWrapper<QuestionFavour> questionFavourQueryWrapper = new QueryWrapper<>();
             questionFavourQueryWrapper.in("questionId", questionIdSet);
             questionFavourQueryWrapper.eq("userId", loginUser.getId());
-            List<QuestionFavour> questionFavourList = questionFavourMapper.selectList(questionFavourQueryWrapper);
-            questionFavourList.forEach(questionFavour -> questionIdHasFavourMap.put(questionFavour.getQuestionId(), true));
+            List<QuestionFavour> questionFavourList =
+                questionFavourMapper.selectList(questionFavourQueryWrapper);
+            questionFavourList.forEach(
+                questionFavour -> questionIdHasFavourMap.put(questionFavour.getQuestionId(), true));
         }
         // 填充信息
         questionVOList.forEach(questionVO -> {
@@ -270,15 +289,17 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         Long questionBankId = questionQueryRequest.getQuestionBankId();
         if (questionBankId != null) {
             // 查询题库内的题目id
-            LambdaQueryWrapper<QuestionBankQuestion> lambdaQueryWrapper = Wrappers.lambdaQuery(QuestionBankQuestion.class)
+            LambdaQueryWrapper<QuestionBankQuestion> lambdaQueryWrapper =
+                Wrappers.lambdaQuery(QuestionBankQuestion.class)
                     .select(QuestionBankQuestion::getQuestionId)
                     .eq(QuestionBankQuestion::getQuestionBankId, questionBankId);
-            List<QuestionBankQuestion> questionList = questionBankQuestionService.list(lambdaQueryWrapper);
+            List<QuestionBankQuestion> questionList =
+                questionBankQuestionService.list(lambdaQueryWrapper);
             if (CollUtil.isNotEmpty(questionList)) {
                 // 取出题目id集合
                 Set<Long> questionIdSet = questionList.stream()
-                        .map(QuestionBankQuestion::getQuestionId)
-                        .collect(Collectors.toSet());
+                    .map(QuestionBankQuestion::getQuestionId)
+                    .collect(Collectors.toSet());
                 // 复用原有题目表的查询条件
                 queryWrapper.in("id", questionIdSet);
             } else {
@@ -337,9 +358,9 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         }
 
         // 按照关键词检索
-        if(StringUtils.isNotBlank(searchText)){
+        if (StringUtils.isNotBlank(searchText)) {
             // title = '' or content = '' or answer = ''
-            boolQueryBuilder.should(QueryBuilders.matchQuery("title",searchText));
+            boolQueryBuilder.should(QueryBuilders.matchQuery("title", searchText));
             boolQueryBuilder.should(QueryBuilders.matchQuery("content", searchText));
             boolQueryBuilder.should(QueryBuilders.matchQuery("answer", searchText));
             boolQueryBuilder.minimumShouldMatch(1);
@@ -348,17 +369,19 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         SortBuilder<?> sortBuilder = SortBuilders.scoreSort();
         if (StringUtils.isNotBlank(sortField)) {
             sortBuilder = SortBuilders.fieldSort(sortField);
-            sortBuilder.order(CommonConstant.SORT_ORDER_ASC.equals(sortOrder) ? SortOrder.ASC : SortOrder.DESC);
+            sortBuilder.order(
+                CommonConstant.SORT_ORDER_ASC.equals(sortOrder) ? SortOrder.ASC : SortOrder.DESC);
         }
         // 分页
         PageRequest pageRequest = PageRequest.of(current, pageSize);
         // 构造查询
         NativeSearchQuery searchQuery = new NativeSearchQueryBuilder()
-                .withQuery(boolQueryBuilder)
-                .withPageable(pageRequest)
-                .withSorts(sortBuilder)
-                .build();
-        SearchHits<QuestionEsDTO> searchHits = elasticsearchRestTemplate.search(searchQuery, QuestionEsDTO.class);
+            .withQuery(boolQueryBuilder)
+            .withPageable(pageRequest)
+            .withSorts(sortBuilder)
+            .build();
+        SearchHits<QuestionEsDTO> searchHits =
+            elasticsearchRestTemplate.search(searchQuery, QuestionEsDTO.class);
         // 复用 MySQL / MyBatis Plus 的分页对象，封装返回结果
         Page<Question> page = new Page<>();
         page.setTotal(searchHits.getTotalHits());
@@ -381,22 +404,116 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void batchDeleteQuestions(List<Long> questionIdList) {
-        if(CollUtil.isEmpty(questionIdList)) {
+        if (CollUtil.isEmpty(questionIdList)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "要删除的题目列表为空");
         }
-        for(Long questionId:questionIdList){
+        for (Long questionId : questionIdList) {
             boolean result = this.removeById(questionId);
-            if(!result){
-                throw new BusinessException(ErrorCode.PARAMS_ERROR,"删除题目失败");
+            if (!result) {
+                throw new BusinessException(ErrorCode.PARAMS_ERROR, "删除题目失败");
             }
             // 移除题目题库关系
-            LambdaQueryWrapper<QuestionBankQuestion> lambdaQueryWrapper = Wrappers.lambdaQuery(QuestionBankQuestion.class)
+            LambdaQueryWrapper<QuestionBankQuestion> lambdaQueryWrapper =
+                Wrappers.lambdaQuery(QuestionBankQuestion.class)
                     .eq(QuestionBankQuestion::getQuestionId, questionId);
             result = questionBankQuestionService.remove(lambdaQueryWrapper);
-            if(!result){
+            if (!result) {
                 throw new BusinessException(ErrorCode.OPERATION_ERROR, "删除题目题库关联失败");
             }
         }
+    }
+
+    /**
+     * AI 生成题目
+     *
+     * @param questionType 题目类型，比如 Java
+     * @param number       题目数量，比如 10
+     * @param user         创建人
+     * @return ture / false
+     */
+    @Override
+    public boolean aiGenerateQuestions(String questionType, int number, User user) {
+        if (ObjectUtil.hasEmpty(questionType, number, user)) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "参数错误");
+        }
+        // 1. 定义系统Prompt
+        String systemPrompt =
+            "你是一位专业的程序员面试官，你要帮我生成 {数量} 道 {方向} 面试题，要求输出格式如下：\n" +
+                "\n" +
+                "1. 什么是 Java 中的反射？\n" +
+                "2. Java 8 中的 Stream API 有什么作用？\n" +
+                "3. xxxxxx\n" +
+                "\n" +
+                "除此之外，请不要输出任何多余的内容，不要输出开头、也不要输出结尾，只输出上面的列表。\n" +
+                "\n" +
+                "接下来我会给你要生成的题目{数量}、以及题目{方向}\n";
+        // 2. 拼接用户Prompt
+        String userPrompt = String.format("题目数量：%s, 题目方向：%s", number, questionType);
+        // 3. 调用AI生成题目
+        String answer = aiManager.doChat(systemPrompt, userPrompt);
+        // 4. 对题目进行预处理
+        // 4.1. 按照换行符分割
+        List<String> lines = Arrays.asList(answer.split("\n"));
+        // 4.2. 移除序号和`
+        List<String> titleList = lines.stream()
+            .map(line -> StrUtil.removePrefix(line, StrUtil.subBefore(line, " ", false)))
+            .map(line -> line.replace("`", ""))
+            .collect(Collectors.toList());
+
+        // 5. 保存题目(并行生成题解)
+        // 创建固定大小的线程池（根据实际情况调整）
+        ExecutorService executor = Executors.newFixedThreadPool(5);
+
+        // 使用CompletableFuture并行处理每个题目的题解生成
+        List<CompletableFuture<Question>> futures = titleList.stream()
+            .map(title -> CompletableFuture.supplyAsync(() -> {
+                Question question = new Question();
+                question.setTitle(title);
+                question.setUserId(user.getId());
+                question.setTags("[\"待审核\"]");
+                // 并行生成题解
+                question.setAnswer(aiGenerateQuestionAnswer(title));
+                return question;
+            }, executor)) // 使用自定义线程池
+            .collect(Collectors.toList());
+
+        // 合并所有异步任务结果
+        List<Question> questionList = futures.stream()
+            .map(CompletableFuture::join) // 等待任务完成
+            .collect(Collectors.toList());
+
+        // 关闭线程池
+        executor.shutdown();
+
+        boolean result = this.saveBatch(questionList);
+        if (!result) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "保存题目失败");
+        }
+        return true;
+    }
+
+    /**
+     * AI 生成题解
+     *
+     * @param questionTitle
+     * @return
+     */
+    private String aiGenerateQuestionAnswer(String questionTitle) {
+        // 1. 定义系统 Prompt
+        String systemPrompt =
+            "你是一位专业的程序员面试官，我会给你一道面试题，请帮我生成详细的题解。要求如下：\n" +
+                "\n" +
+                "1. 题解的语句要自然流畅\n" +
+                "2. 题解可以先给出总结性的回答，再详细解释\n" +
+                "3. 要使用 Markdown 语法输出\n" +
+                "\n" +
+                "除此之外，请不要输出任何多余的内容，不要输出开头、也不要输出结尾，只输出题解。\n" +
+                "\n" +
+                "接下来我会给你要生成的面试题";
+        // 2. 拼接用户 Prompt
+        String userPrompt = String.format("面试题：%s", questionTitle);
+        // 3. 调用 AI 生成题解
+        return aiManager.doChat(systemPrompt, userPrompt);
     }
 
 }
